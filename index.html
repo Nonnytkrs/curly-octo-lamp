@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thai Consonant Drill</title>
+
+  <!-- Modern, responsive, accessible single-file UI revamp -->
+  <style>
+    :root{
+      color-scheme: dark;
+      --bg0:#070A12;
+      --bg1:#0B1020;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(255,255,255,.18);
+      --text:#EEF2FF;
+      --muted:#A7B0CC;
+
+      --good:#34D399;
+      --bad:#FB7185;
+
+      --accent:#7C3AED;
+      --accent2:#22D3EE;
+
+      --shadow2: 0 10px 28px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+
+      --focus: 0 0 0 3px rgba(124,58,237,.35);
+      --gap: 14px;
+      --maxw: 1040px;
+
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: light){
+      :root{
+        color-scheme: light;
+        --bg0:#F6F7FB;
+        --bg1:#EEF1FA;
+        --card: rgba(10,20,50,.04);
+        --card2: rgba(10,20,50,.06);
+        --stroke: rgba(10,20,50,.10);
+        --stroke2: rgba(10,20,50,.14);
+        --text:#0B1020;
+        --muted:#4A5575;
+        --shadow2: 0 10px 28px rgba(10,20,50,.12);
+        --focus: 0 0 0 3px rgba(124,58,237,.22);
+      }
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(124,58,237,.25), transparent 55%),
+        radial-gradient(900px 700px at 85% 5%, rgba(34,211,238,.18), transparent 55%),
+        radial-gradient(900px 700px at 80% 80%, rgba(251,113,133,.12), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    .container{ max-width: var(--maxw); margin: 0 auto; padding: clamp(16px, 3vw, 28px); }
+
+    .header{ display:flex; align-items:flex-start; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+    .title{ display:flex; flex-direction:column; gap:6px; min-width: 0; }
+    h1{ margin:0; font-size: clamp(20px, 3.2vw, 28px); letter-spacing: -0.02em; line-height: 1.15; }
+    .subtitle{ margin:0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+    .topActions{ display:flex; align-items:center; gap: 10px; flex-wrap: wrap; justify-content:flex-end; }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap: var(--gap); }
+    @media (min-width: 900px){ .grid{ grid-template-columns: 1.2fr 0.8fr; align-items:start; } }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+    .cardInner{ padding: 16px; }
+    @media (min-width: 500px){ .cardInner{ padding: 18px; } }
+
+    .cardHeader{ display:flex; flex-wrap: wrap; gap: 10px; align-items:center; justify-content: space-between; margin-bottom: 12px; }
+
+    .pills{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 7px 10px; border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: var(--card2);
+      color: var(--muted);
+      font-size: 12px; line-height: 1; white-space:nowrap;
+    }
+    .dot{ width:8px; height:8px; border-radius:99px; background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 0 0 3px rgba(124,58,237,.14); }
+
+    .questionWrap{ display:flex; flex-direction:column; align-items:center; text-align:center; gap: 10px; padding: 14px 6px 4px; }
+    .questionGlyph{ font-size: clamp(88px, 16vw, 132px); line-height: 1; margin: 6px 0 0; letter-spacing: .02em; text-shadow: 0 12px 44px rgba(0,0,0,.25); user-select:none; }
+    .prompt{ margin:0; color: var(--muted); font-size: 14px; line-height: 1.45; max-width: 56ch; }
+
+    .controls{ display:grid; gap: 10px; margin-top: 8px; width: 100%; max-width: 620px; }
+    .answerRow{ display:grid; gap: 10px; grid-template-columns: 1fr; }
+    @media (min-width: 560px){ .answerRow{ grid-template-columns: 1fr auto auto; align-items: stretch; } }
+
+    .input{
+      width:100%; font-size: 16px; padding: 12px 12px;
+      border-radius: var(--radius2); border: 1px solid var(--stroke);
+      background: rgba(0,0,0,.18); color: var(--text);
+      outline: none; min-height: 44px;
+    }
+    .input::placeholder{ color: color-mix(in oklab, var(--muted), transparent 35%); }
+    .input:focus{ box-shadow: var(--focus); border-color: color-mix(in oklab, var(--accent), var(--stroke2)); }
+
+    .btn{
+      appearance:none; border: 1px solid var(--stroke);
+      border-radius: var(--radius2);
+      background: color-mix(in oklab, var(--accent), transparent 55%);
+      color: var(--text);
+      padding: 11px 12px; min-height: 44px;
+      font-size: 14px; cursor:pointer;
+      transition: transform .06s ease, filter .12s ease, background .12s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ filter: brightness(1.05); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.secondary{ background: rgba(255,255,255,.06); }
+    .btn:focus{ outline:none; box-shadow: var(--focus); }
+
+    .microActions{ display:flex; gap: 10px; flex-wrap: wrap; justify-content:center; }
+
+    .feedback{
+      display:none; width:100%; max-width: 620px;
+      border-radius: var(--radius2); border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      padding: 10px 12px; text-align:left;
+    }
+    .feedback strong{ font-weight: 700; }
+    .good{ color: var(--good); }
+    .bad{ color: var(--bad); }
+    .metaLine{ margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.35; word-break: break-word; }
+    .mono{ font-family: var(--mono); }
+
+    .stats{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; width: 100%; max-width: 620px; }
+    .stat{ border-radius: var(--radius2); border: 1px solid var(--stroke); background: rgba(255,255,255,.06); padding: 10px 10px; text-align:left; }
+    .stat .k{ color: var(--muted); font-size: 12px; }
+    .stat .v{ font-size: 18px; margin-top: 2px; font-weight: 650; letter-spacing:-0.01em; }
+
+    h2{ margin:0; font-size: 15px; letter-spacing:-0.01em; }
+    .section{ margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--stroke); }
+    .settingsGroup{ display:grid; gap: 10px; }
+    .label{ display:flex; align-items:flex-start; gap: 10px; font-size: 14px; color: var(--text); line-height: 1.35; user-select:none; }
+    .label span{ color: var(--muted); font-size: 13px; }
+    input[type="checkbox"]{ width: 18px; height: 18px; accent-color: var(--accent); margin-top: 1px; cursor:pointer; }
+    .tiny{ margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+
+    details{ margin-top: 12px; border-radius: var(--radius2); border: 1px solid var(--stroke); background: rgba(255,255,255,.04); overflow:hidden; }
+    details > summary{
+      cursor:pointer; padding: 10px 12px; color: var(--muted); list-style:none;
+      display:flex; align-items:center; justify-content: space-between; gap: 10px;
+    }
+    details > summary::-webkit-details-marker{ display:none; }
+    .chev{ width: 18px; height: 18px; flex:0 0 auto; opacity:.8; }
+    details[open] > summary{ border-bottom: 1px solid var(--stroke); }
+    .detailsBody{ padding: 10px 12px 12px; }
+
+    table{ width:100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    th, td{ text-align:left; padding: 8px; border-bottom: 1px solid var(--stroke); vertical-align: top; }
+    th{ color: var(--muted); font-weight: 650; }
+    td:first-child{ font-size: 16px; width: 72px; }
+
+    .srOnly{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+    @media (prefers-reduced-motion: reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+  
+.introBanner{
+  text-align: center;
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 700;
+  letter-spacing: .04em;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--stroke);
+  background: linear-gradient(135deg,
+    color-mix(in oklab, var(--accent), transparent 70%),
+    color-mix(in oklab, var(--accent2), transparent 75%)
+  );
+  backdrop-filter: blur(8px);
+}
+
+
+/* --- Intro (splash) card --- */
+.introWrap{
+  display:flex;
+  justify-content:center;
+  margin: 6px 0 18px;
+}
+.introCard{
+  width: min(760px, 100%);
+}
+.introInner{
+  padding: clamp(18px, 3vw, 28px);
+  text-align:center;
+  display:grid;
+  gap: 10px;
+}
+.introKicker{
+  font-size: clamp(18px, 2.6vw, 28px);
+  font-weight: 750;
+  letter-spacing: -0.02em;
+}
+.introSub{
+  margin:0;
+  color: var(--muted);
+  font-size: clamp(14px, 2vw, 18px);
+  line-height: 1.35;
+}
+.startBtn{
+  margin: 8px auto 0;
+  padding: 12px 16px;
+  min-width: 160px;
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg,
+      color-mix(in oklab, var(--accent), transparent 8%),
+      color-mix(in oklab, var(--accent2), transparent 12%)
+    );
+  border: 1px solid color-mix(in oklab, var(--accent), var(--stroke2));
+  box-shadow: 0 14px 40px rgba(0,0,0,.25);
+}
+.startBtn:hover{ filter: brightness(1.08); }
+
+</style>
+</head>
+<body>
+  <div class="container">
+    
+    
+    <div class="introWrap" id="introWrap">
+      <section class="card introCard" aria-label="Intro">
+        <div class="introInner">
+          <div class="introKicker">CSII Team 13 presents</div>
+          <p class="introSub">Thai Consonants</p>
+          <button class="btn startBtn" id="startBtn" type="button">Start Quiz</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="app">
+      <div class="header">
+      <div class="title">
+        <h1>Thai Consonant Drill</h1>
+        <p class="subtitle">
+          Practice Thai consonants across multiple drills: <strong>letter ↔ name</strong>, <strong>letter → class</strong>, and <strong>letter → initial sound</strong>.
+          Use <span class="mono">Enter</span> to check, <span class="mono">Esc</span> for a new question.
+        </p>
+      </div>
+
+      <div class="topActions" aria-label="Quick actions">
+        <button class="btn secondary" id="newBtnTop" type="button">New</button>
+        <button class="btn secondary" id="revealBtnTop" type="button">Reveal</button>
+        <button class="btn secondary" id="resetBtnTop" type="button">Reset</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card" aria-label="Practice">
+        <div class="cardInner">
+          <div class="cardHeader">
+            <div class="pills" aria-label="Status">
+              <span class="pill"><span class="dot" aria-hidden="true"></span><span id="modePill">Mode: letter → name</span></span>
+              <span class="pill" id="poolPill">Pool: all</span>
+              <span class="pill" id="hintPill">Hints: off</span>
+            </div>
+
+            <div class="pills" aria-label="Keyboard shortcuts">
+              <span class="pill"><span class="mono">Enter</span> = check</span>
+              <span class="pill"><span class="mono">Esc</span> = new</span>
+            </div>
+          </div>
+
+          <div class="questionWrap">
+            <div class="questionGlyph" id="question" aria-live="polite">ก</div>
+            <p class="prompt" id="prompt">Type the consonant name (e.g., “ก ไก่”)</p>
+
+            <div class="controls">
+              <div class="answerRow">
+                <label class="srOnly" for="answer">Your answer</label>
+                <input class="input" id="answer" type="text" autocomplete="off" placeholder="Your answer…" inputmode="text" />
+                <button class="btn" id="checkBtn" type="button">Check</button>
+                <button class="btn secondary" id="skipBtn" type="button">Skip</button>
+              </div>
+
+              <div class="microActions" aria-label="Practice actions">
+                <button class="btn secondary" id="newBtn" type="button">New Question</button>
+                <button class="btn secondary" id="revealBtn" type="button">Reveal Answer</button>
+                <button class="btn secondary" id="resetBtn" type="button">Reset Stats</button>
+              </div>
+
+              <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+
+              <div class="stats" aria-label="Stats">
+                <div class="stat"><div class="k">Correct</div><div class="v" id="stCorrect">0</div></div>
+                <div class="stat"><div class="k">Wrong</div><div class="v" id="stWrong">0</div></div>
+                <div class="stat"><div class="k">Streak</div><div class="v" id="stStreak">0</div></div>
+              </div>
+
+              <details>
+                <summary>
+                  <span>Show pool (what you're drilling)</span>
+                  <svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </summary>
+                <div class="detailsBody">
+                  <p class="tiny">Tip: You can edit the data list in the code if you want to add IPA, final sounds, etc.</p>
+                  <table id="poolTable"></table>
+                </div>
+              </details>
+
+              <p class="tiny" id="debug" style="margin-top:10px;"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="card" aria-label="Settings">
+        <div class="cardInner">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <h2>Settings</h2>
+            <span class="pill" title="Your selections change the drill immediately.">Live</span>
+          </div>
+          <p class="tiny" style="margin-top:6px;">Pick drill modes and which consonants to include. (At least one of each section.)</p>
+
+          <div class="section">
+            <h2>Drill modes</h2>
+            <p class="tiny">Choose what you want to practice.</p>
+            <div class="settingsGroup" style="margin-top:10px;">
+              <label class="label"><input type="checkbox" class="mode" value="letter_name" checked> Letter → Name <span>(ก → ก ไก่)</span></label>
+              <label class="label"><input type="checkbox" class="mode" value="letter_class"> Letter → Class <span>(ก → mid)</span></label>
+              <label class="label"><input type="checkbox" class="mode" value="letter_sound"> Letter → Initial sound <span>(ก → k)</span></label>
+              <label class="label"><input type="checkbox" class="mode" value="name_letter"> Name → Letter <span>(ก ไก่ → ก)</span></label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Consonant pool</h2>
+            <p class="tiny">Filter by tone class.</p>
+            <div class="settingsGroup" style="margin-top:10px;">
+              <label class="label"><input type="checkbox" id="poolLow" checked> Low class</label>
+              <label class="label"><input type="checkbox" id="poolMid" checked> Middle class</label>
+              <label class="label"><input type="checkbox" id="poolHigh" checked> High class</label>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Hints</h2>
+            <div class="settingsGroup" style="margin-top:10px;">
+              <label class="label"><input type="checkbox" id="hints"> Show hints <span>(class + sound)</span></label>
+              <p class="tiny">Input matching is forgiving: ignores extra spaces, case, and some punctuation.</p>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Quick tips</h2>
+            <ul class="tiny" style="margin:10px 0 0 18px; padding:0; display:grid; gap:6px;">
+              <li>Use <span class="mono">Skip</span> if you want to keep pace and review later.</li>
+              <li><span class="mono">Reveal</span> shows the full breakdown (letter, name, class, sound).</li>
+              <li>Turn on only one mode for focused drilling.</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+    </div>
+  </div>
+
+<script>
+/**
+ * Same drill logic as your original file; only layout/styling changed.
+ */
+const THAI_CONSONANTS = [
+  { letter:"ก", name:"ก ไก่", class:"mid", sound:"k" },
+  { letter:"ข", name:"ข ไข่", class:"high", sound:"kh" },
+  { letter:"ฃ", name:"ฃ ขวด", class:"high", sound:"kh" },
+  { letter:"ค", name:"ค ควาย", class:"low", sound:"kh" },
+  { letter:"ฅ", name:"ฅ คน", class:"low", sound:"kh" },
+  { letter:"ฆ", name:"ฆ ระฆัง", class:"low", sound:"kh" },
+  { letter:"ง", name:"ง งู", class:"low", sound:"ng" },
+  { letter:"จ", name:"จ จาน", class:"mid", sound:"ch" },
+  { letter:"ฉ", name:"ฉ ฉิ่ง", class:"high", sound:"ch" },
+  { letter:"ช", name:"ช ช้าง", class:"low", sound:"ch" },
+  { letter:"ซ", name:"ซ โซ่", class:"low", sound:"s" },
+  { letter:"ฌ", name:"ฌ เฌอ", class:"low", sound:"ch" },
+  { letter:"ญ", name:"ญ หญิง", class:"low", sound:"y" },
+  { letter:"ฎ", name:"ฎ ชฎา", class:"mid", sound:"d" },
+  { letter:"ฏ", name:"ฏ ปฏัก", class:"mid", sound:"t" },
+  { letter:"ฐ", name:"ฐ ฐาน", class:"high", sound:"th" },
+  { letter:"ฑ", name:"ฑ มณโฑ", class:"low", sound:"th" },
+  { letter:"ฒ", name:"ฒ ผู้เฒ่า", class:"low", sound:"th" },
+  { letter:"ณ", name:"ณ เณร", class:"low", sound:"n" },
+  { letter:"ด", name:"ด เด็ก", class:"mid", sound:"d" },
+  { letter:"ต", name:"ต เต่า", class:"mid", sound:"t" },
+  { letter:"ถ", name:"ถ ถุง", class:"high", sound:"th" },
+  { letter:"ท", name:"ท ทหาร", class:"low", sound:"th" },
+  { letter:"ธ", name:"ธ ธง", class:"low", sound:"th" },
+  { letter:"น", name:"น หนู", class:"low", sound:"n" },
+  { letter:"บ", name:"บ ใบไม้", class:"mid", sound:"b" },
+  { letter:"ป", name:"ป ปลา", class:"mid", sound:"p" },
+  { letter:"ผ", name:"ผ ผึ้ง", class:"high", sound:"ph" },
+  { letter:"ฝ", name:"ฝ ฝา", class:"high", sound:"f" },
+  { letter:"พ", name:"พ พาน", class:"low", sound:"ph" },
+  { letter:"ฟ", name:"ฟ ฟัน", class:"low", sound:"f" },
+  { letter:"ภ", name:"ภ สำเภา", class:"low", sound:"ph" },
+  { letter:"ม", name:"ม ม้า", class:"low", sound:"m" },
+  { letter:"ย", name:"ย ยักษ์", class:"low", sound:"y" },
+  { letter:"ร", name:"ร เรือ", class:"low", sound:"r" },
+  { letter:"ล", name:"ล ลิง", class:"low", sound:"l" },
+  { letter:"ว", name:"ว แหวน", class:"low", sound:"w" },
+  { letter:"ศ", name:"ศ ศาลา", class:"high", sound:"s" },
+  { letter:"ษ", name:"ษ ฤๅษี", class:"high", sound:"s" },
+  { letter:"ส", name:"ส เสือ", class:"high", sound:"s" },
+  { letter:"ห", name:"ห หีบ", class:"high", sound:"h" },
+  { letter:"ฬ", name:"ฬ จุฬา", class:"low", sound:"l" },
+  { letter:"อ", name:"อ อ่าง", class:"mid", sound:"(silent/ʔ)" },
+  { letter:"ฮ", name:"ฮ นกฮูก", class:"low", sound:"h" },
+];
+
+
+// --- Intro start toggle ---
+const introWrap = document.getElementById("introWrap");
+const app = document.getElementById("app");
+const startBtn = document.getElementById("startBtn");
+
+function startQuiz(){
+  if(introWrap) introWrap.style.display = "none";
+  if(app) app.hidden = false;
+  // Focus input once visible
+  const a = document.getElementById("answer");
+  if(a) a.focus();
+}
+
+if(app) app.hidden = true;
+if(startBtn) startBtn.addEventListener("click", startQuiz);
+
+// Allow Enter to start while on intro
+document.addEventListener("keydown", (e) => {
+  if(!app || !introWrap) return;
+  const introVisible = introWrap.style.display !== "none";
+  if(introVisible && e.key === "Enter"){
+    e.preventDefault();
+    startQuiz();
+  }
+});
+
+
+const norm = (s) =>
+  (s ?? "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[’'"]/g, "")
+    .replace(/\s+/g, " ")
+    .replace(/[.,;:!?()]/g, "");
+
+function pickRandom(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+function getEnabledModes(){
+  const boxes = [...document.querySelectorAll(".mode")];
+  const enabled = boxes.filter(b => b.checked).map(b => b.value);
+  return enabled.length ? enabled : ["letter_name"];
+}
+
+function getPool(){
+  const wantLow = document.getElementById("poolLow").checked;
+  const wantMid = document.getElementById("poolMid").checked;
+  const wantHigh = document.getElementById("poolHigh").checked;
+
+  return THAI_CONSONANTS.filter(c =>
+    (wantLow && c.class === "low") ||
+    (wantMid && c.class === "mid") ||
+    (wantHigh && c.class === "high")
+  );
+}
+
+function renderPoolTable(pool){
+  const t = document.getElementById("poolTable");
+  const rows = pool.map(c =>
+    `<tr><td>${c.letter}</td><td>${c.name}</td><td>${c.class}</td><td>${c.sound}</td></tr>`
+  ).join("");
+  t.innerHTML = `
+    <thead><tr><th>Letter</th><th>Name</th><th>Class</th><th>Sound</th></tr></thead>
+    <tbody>${rows}</tbody>
+  `;
+}
+
+function modeLabel(mode){
+  switch(mode){
+    case "letter_name": return "letter → name";
+    case "letter_class": return "letter → class";
+    case "letter_sound": return "letter → initial sound";
+    case "name_letter": return "name → letter";
+    default: return mode;
+  }
+}
+
+let current = null;
+let mode = "letter_name";
+let correct = 0, wrong = 0, streak = 0;
+
+const elQ = document.getElementById("question");
+const elPrompt = document.getElementById("prompt");
+const elAns = document.getElementById("answer");
+const elFb = document.getElementById("feedback");
+const elModePill = document.getElementById("modePill");
+const elPoolPill = document.getElementById("poolPill");
+const elHintPill = document.getElementById("hintPill");
+const elDebug = document.getElementById("debug");
+
+function updateStats(){
+  document.getElementById("stCorrect").textContent = correct;
+  document.getElementById("stWrong").textContent = wrong;
+  document.getElementById("stStreak").textContent = streak;
+}
+
+function expectedAnswer(){
+  if(!current) return "";
+  switch(mode){
+    case "letter_name": return current.name;
+    case "letter_class": return current.class;
+    case "letter_sound": return current.sound;
+    case "name_letter": return current.letter;
+    default: return "";
+  }
+}
+
+function questionText(){
+  if(!current) return "";
+  return mode === "name_letter" ? current.name : current.letter;
+}
+
+function promptText(){
+  const hintsOn = document.getElementById("hints").checked;
+  let base = "";
+  switch(mode){
+    case "letter_name": base = `Type the consonant name (e.g., “ก ไก่”)`; break;
+    case "letter_class": base = `Type the class: high / mid / low`; break;
+    case "letter_sound": base = `Type the initial sound (e.g., k, kh, ng, ch, s…)`; break;
+    case "name_letter": base = `Type the letter (single Thai character)`; break;
+  }
+  if(hintsOn && mode !== "letter_class"){
+    base += ` • Hint: class=${current.class}, sound=${current.sound}`;
+  }
+  return base;
+}
+
+function setPills(pool){
+  elModePill.textContent = `Mode: ${modeLabel(mode)}`;
+  const groups = new Set(pool.map(x => x.class));
+  const poolLabel = groups.size === 3 ? "all" : [...groups].sort().join("+");
+  elPoolPill.textContent = `Pool: ${poolLabel}`;
+  elHintPill.textContent = `Hints: ${document.getElementById("hints").checked ? "on" : "off"}`;
+}
+
+function newQuestion(){
+  const pool = getPool();
+  if(pool.length === 0){
+    elQ.textContent = "—";
+    elPrompt.textContent = "Enable at least one pool (low/mid/high) in Settings.";
+    elFb.style.display = "none";
+    return;
+  }
+  renderPoolTable(pool);
+
+  const modes = getEnabledModes();
+  mode = pickRandom(modes);
+  current = pickRandom(pool);
+
+  elQ.textContent = questionText();
+  elPrompt.textContent = promptText();
+  setPills(pool);
+
+  elFb.style.display = "none";
+  elFb.innerHTML = "";
+  elAns.value = "";
+  elAns.focus();
+
+  elDebug.textContent = `Expected: ${expectedAnswer()}  •  Current: ${current.letter} (${current.name})`;
+}
+
+function showFeedback(ok, user, expected){
+  elFb.style.display = "block";
+  if(ok){
+    elFb.innerHTML = `
+      <div class="good"><strong>✅ Correct</strong></div>
+      <div class="metaLine">Your answer: <span class="mono">${user}</span></div>
+    `;
+  }else{
+    elFb.innerHTML = `
+      <div class="bad"><strong>❌ Not quite</strong></div>
+      <div class="metaLine">Your answer: <span class="mono">${user || "—"}</span></div>
+      <div class="metaLine">Correct: <span class="mono">${expected}</span></div>
+      <div class="metaLine">Letter: <span class="mono">${current.letter}</span> • Name: <span class="mono">${current.name}</span> • Class: <span class="mono">${current.class}</span> • Sound: <span class="mono">${current.sound}</span></div>
+    `;
+  }
+}
+
+function check(){
+  if(!current) return;
+  const user = elAns.value;
+  const exp = expectedAnswer();
+
+  const ok = norm(user) === norm(exp) || (
+    mode === "letter_class" && (
+      (norm(user) === "middle" && norm(exp) === "mid") ||
+      (norm(user) === "mid" && norm(exp) === "middle")
+    )
+  );
+
+  if(ok){ correct += 1; streak += 1; }
+  else { wrong += 1; streak = 0; }
+
+  updateStats();
+  showFeedback(ok, user, exp);
+
+  if(ok){ setTimeout(newQuestion, 450); }
+  else { elAns.focus(); elAns.select(); }
+}
+
+document.getElementById("checkBtn").addEventListener("click", check);
+document.getElementById("skipBtn").addEventListener("click", () => { wrong += 1; streak = 0; updateStats(); newQuestion(); });
+
+document.getElementById("newBtn").addEventListener("click", newQuestion);
+document.getElementById("revealBtn").addEventListener("click", () => { if(current) showFeedback(false, elAns.value, expectedAnswer()); });
+document.getElementById("resetBtn").addEventListener("click", () => { correct=0; wrong=0; streak=0; updateStats(); });
+
+document.getElementById("newBtnTop").addEventListener("click", newQuestion);
+document.getElementById("revealBtnTop").addEventListener("click", () => { if(current) showFeedback(false, elAns.value, expectedAnswer()); });
+document.getElementById("resetBtnTop").addEventListener("click", () => { correct=0; wrong=0; streak=0; updateStats(); });
+
+document.getElementById("hints").addEventListener("change", () => { if(current) elPrompt.textContent = promptText(); setPills(getPool()); });
+[...document.querySelectorAll(".mode")].forEach(b => b.addEventListener("change", newQuestion));
+["poolLow","poolMid","poolHigh"].forEach(id => document.getElementById(id).addEventListener("change", newQuestion));
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") check();
+  if(e.key === "Escape") newQuestion();
+});
+
+updateStats();
+newQuestion();
+</script>
+</body>
+</html>
