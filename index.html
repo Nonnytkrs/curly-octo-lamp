@@ -462,12 +462,12 @@
 
     try {
       const response = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ nickname: playerName })
-      });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ nickname: playerName })
+});
 
       if (!response.ok) {
         throw new Error("Failed to register quiz start");
