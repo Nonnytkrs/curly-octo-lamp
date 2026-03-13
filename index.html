@@ -32,6 +32,7 @@
     h1{
       margin:0;
       font-size:26px;
+      font-weight:800;
     }
 
     h2{
@@ -43,25 +44,27 @@
       margin-top:6px;
       margin-bottom:20px;
       color:#555;
+      font-size:18px;
     }
 
     input{
-      padding:10px;
-      border-radius:8px;
+      padding:14px 16px;
+      border-radius:18px;
       border:1px solid #ccc;
       width:80%;
-      font-size:16px;
+      font-size:18px;
+      outline:none;
     }
 
     .startBtn{
       background:#1677ff;
       color:white;
-      padding:12px;
+      padding:14px 20px;
       border:none;
-      border-radius:10px;
+      border-radius:18px;
       cursor:pointer;
-      width:150px;
-      font-size:16px;
+      width:180px;
+      font-size:18px;
     }
 
     .startBtn:hover{
@@ -128,12 +131,12 @@
     .meta{
       color:#666;
       font-size:14px;
-      margin-top:6px;
-      margin-bottom:4px;
+      margin-top:4px;
+      margin-bottom:8px;
     }
 
-    .error{
-      color:#c62828;
+    .notice{
+      color:#b26a00;
       margin-top:12px;
       min-height:20px;
       font-size:14px;
@@ -143,20 +146,18 @@
 
 <body>
 
-  <!-- START PAGE -->
   <div class="card" id="startPage">
     <h1>curly-octo-lamp presents</h1>
     <div class="subtitle">Thai Consonant Quiz</div>
 
     <input id="nickname" placeholder="Enter nickname" maxlength="40" />
-    <br /><br />
+    <br><br>
 
     <button class="startBtn" onclick="startQuiz()">Start Quiz</button>
 
-    <div class="error" id="startError"></div>
+    <div class="notice" id="startNotice"></div>
   </div>
 
-  <!-- QUIZ PAGE -->
   <div class="card hidden" id="quizPage">
     <div class="hearts" id="hearts">❤️❤️❤️</div>
 
@@ -176,7 +177,6 @@
     </div>
   </div>
 
-  <!-- GAME OVER -->
   <div class="card hidden" id="gameOver">
     <h1>💀 Game Over</h1>
     <p id="scoreText"></p>
@@ -184,7 +184,7 @@
   </div>
 
   <script>
-    // Replace this with your real curly-octo-lamp backend URL from Render
+    // Replace this with your actual curly-octo-lamp backend URL
     const BACKEND_URL = "https://your-curly-octo-lamp-backend.onrender.com";
 
     const consonants = [
@@ -222,11 +222,14 @@
     let startCount = 0;
 
     async function startQuiz(){
-      const errorEl = document.getElementById("startError");
-      errorEl.innerText = "";
+      const noticeEl = document.getElementById("startNotice");
+      noticeEl.innerText = "";
 
       const nicknameInput = document.getElementById("nickname").value.trim();
       const nickname = nicknameInput || "Player";
+
+      player = nickname;
+      startCount = 0;
 
       try{
         const response = await fetch(`${BACKEND_URL}/api/start-quiz`, {
@@ -234,43 +237,33 @@
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({
-            nickname: nickname
-          })
+          body: JSON.stringify({ nickname })
         });
 
-        if(!response.ok){
-          let message = "Failed to start quiz";
-          try{
-            const errData = await response.json();
-            if(errData.detail){
-              message = errData.detail;
-            }
-          }catch(e){}
-          throw new Error(message);
+        if(response.ok){
+          const data = await response.json();
+          player = data.nickname;
+          startCount = data.start_count;
+        }else{
+          noticeEl.innerText = "Backend not available right now. Starting quiz without saved counter.";
         }
-
-        const data = await response.json();
-
-        player = data.nickname;
-        startCount = data.start_count;
-
-        lives = 3;
-        score = 0;
-        updateHearts();
-
-        document.getElementById("player").innerText = `${player}`;
-        document.getElementById("counterText").innerText = `Start count: ${startCount}`;
-
-        document.getElementById("startPage").classList.add("hidden");
-        document.getElementById("gameOver").classList.add("hidden");
-        document.getElementById("quizPage").classList.remove("hidden");
-
-        newQuestion();
       }catch(error){
-        console.error("Start quiz error:", error);
-        errorEl.innerText = "Could not start quiz. Check your backend URL and Render service.";
+        console.error("Backend connection failed:", error);
+        noticeEl.innerText = "Backend not available right now. Starting quiz without saved counter.";
       }
+
+      document.getElementById("player").innerText = player;
+      document.getElementById("counterText").innerText = `Start count: ${startCount}`;
+
+      lives = 3;
+      score = 0;
+      updateHearts();
+
+      document.getElementById("startPage").classList.add("hidden");
+      document.getElementById("gameOver").classList.add("hidden");
+      document.getElementById("quizPage").classList.remove("hidden");
+
+      newQuestion();
     }
 
     function newQuestion(){
@@ -362,10 +355,14 @@
     }
 
     function restart(){
+      lives = 3;
+      score = 0;
+      updateHearts();
+
       document.getElementById("gameOver").classList.add("hidden");
       document.getElementById("startPage").classList.remove("hidden");
       document.getElementById("nickname").value = player === "Player" ? "" : player;
-      document.getElementById("startError").innerText = "";
+      document.getElementById("startNotice").innerText = "";
     }
   </script>
 </body>
