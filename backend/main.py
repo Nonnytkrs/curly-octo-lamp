@@ -94,7 +94,7 @@ def health():
 
 @app.post("/api/start-quiz", response_model=StartQuizResponse)
 def start_quiz(payload: StartQuizRequest):
-    nickname = payload.nickname.strip()
+    nickname = payload.nickname.strip().lower()
 
     if not nickname:
         raise HTTPException(status_code=400, detail="Nickname is required")
@@ -123,6 +123,8 @@ def start_quiz(payload: StartQuizRequest):
 
     if row is None:
         raise HTTPException(status_code=500, detail="User could not be loaded")
+
+    print("QUIZ START:", row)
 
     return StartQuizResponse(
         nickname=row[0],
