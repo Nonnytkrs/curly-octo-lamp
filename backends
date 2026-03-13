@@ -1,0 +1,30 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+leaderboard = []
+
+@app.route("/")
+def home():
+    return "Thai Consonant Quiz API"
+
+@app.route("/submit-score", methods=["POST"])
+def submit_score():
+    data = request.json
+    name = data.get("name")
+    score = data.get("score")
+
+    leaderboard.append({"name": name, "score": score})
+
+    leaderboard.sort(key=lambda x: x["score"], reverse=True)
+
+    return jsonify({"message": "score saved"})
+
+@app.route("/leaderboard", methods=["GET"])
+def get_leaderboard():
+    return jsonify(leaderboard[:10])
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
