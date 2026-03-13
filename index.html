@@ -1,363 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thai Consonant Quiz</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thai Consonant Quiz</title>
 
-<style>
+  <style>
+    body{
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:#f4f5f7;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      margin:0;
+      padding:20px;
+      box-sizing:border-box;
+    }
 
-body{
-font-family:system-ui,-apple-system,Segoe UI,Roboto;
-background:#f4f5f7;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
-}
+    .card{
+      background:white;
+      width:420px;
+      max-width:100%;
+      padding:30px;
+      border-radius:18px;
+      text-align:center;
+      box-shadow:0 12px 30px rgba(0,0,0,0.12);
+      box-sizing:border-box;
+    }
 
-.card{
-background:white;
-width:420px;
-padding:30px;
-border-radius:18px;
-text-align:center;
-box-shadow:0 12px 30px rgba(0,0,0,0.12);
-}
+    h1{
+      margin:0;
+      font-size:26px;
+    }
 
-h1{
-margin:0;
-font-size:26px;
-}
+    h2{
+      margin-top:0;
+      margin-bottom:10px;
+    }
 
-.subtitle{
-margin-top:6px;
-margin-bottom:20px;
-color:#555;
-}
+    .subtitle{
+      margin-top:6px;
+      margin-bottom:20px;
+      color:#555;
+    }
 
-input{
-padding:10px;
-border-radius:8px;
-border:1px solid #ccc;
-width:80%;
-}
+    input{
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      width:80%;
+      font-size:16px;
+    }
 
-.startBtn{
-background:#1677ff;
-color:white;
-padding:12px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-width:150px;
-}
+    .startBtn{
+      background:#1677ff;
+      color:white;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      width:150px;
+      font-size:16px;
+    }
 
-.letter{
-font-size:110px;
-margin:20px 0;
-}
+    .startBtn:hover{
+      opacity:0.95;
+    }
 
-.choice{
-background:#eceff3;
-width:100%;
-margin:8px 0;
-padding:14px;
-border:none;
-border-radius:12px;
-font-size:18px;
-cursor:pointer;
-}
+    .letter{
+      font-size:110px;
+      margin:20px 0;
+      line-height:1;
+    }
 
-.choice:hover{
-background:#dde1e7;
-}
+    .choice{
+      background:#eceff3;
+      width:100%;
+      margin:8px 0;
+      padding:14px;
+      border:none;
+      border-radius:12px;
+      font-size:18px;
+      cursor:pointer;
+    }
 
-.controls{
-margin-top:10px;
-}
+    .choice:hover{
+      background:#dde1e7;
+    }
 
-.controls button{
-margin:4px;
-padding:10px;
-border-radius:10px;
-border:none;
-cursor:pointer;
-}
+    .controls{
+      margin-top:10px;
+    }
 
-.hearts{
-font-size:24px;
-margin-bottom:10px;
-}
+    .controls button{
+      margin:4px;
+      padding:10px 14px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-size:14px;
+      background:#eceff3;
+    }
 
-.feedback{
-height:22px;
-margin-top:10px;
-font-weight:bold;
-}
+    .controls button:hover{
+      background:#dde1e7;
+    }
 
-.good{color:green;}
-.bad{color:red;}
+    .hearts{
+      font-size:24px;
+      margin-bottom:10px;
+    }
 
-.hidden{
-display:none;
-}
+    .feedback{
+      min-height:22px;
+      margin-top:10px;
+      font-weight:bold;
+    }
 
-</style>
+    .good{color:green;}
+    .bad{color:red;}
+
+    .hidden{
+      display:none;
+    }
+
+    .meta{
+      color:#666;
+      font-size:14px;
+      margin-top:6px;
+      margin-bottom:4px;
+    }
+
+    .error{
+      color:#c62828;
+      margin-top:12px;
+      min-height:20px;
+      font-size:14px;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- START PAGE -->
-
-<div class="card" id="startPage">
-
-<h1>curly-octo-lamp presents</h1>
-<div class="subtitle">Thai Consonant Quiz</div>
-
-<input id="nickname" placeholder="Enter nickname">
-
-<br><br>
-
-<button class="startBtn" onclick="startQuiz()">Start Quiz</button>
-
-</div>
-
-
-<!-- QUIZ PAGE -->
-
-<div class="card hidden" id="quizPage">
-
-<div class="hearts" id="hearts">❤️❤️❤️</div>
-
-<h2 id="player">Player</h2>
-
-<div class="letter" id="letter">ก</div>
-
-<div id="choices"></div>
-
-<div class="feedback" id="feedback"></div>
-
-<div class="controls">
-<button onclick="speak()">Speak</button>
-<button onclick="skip()">Skip</button>
-<button onclick="resetGame()">Reset</button>
-</div>
-
-</div>
-
-
-<!-- GAME OVER -->
-
-<div class="card hidden" id="gameOver">
-
-<h1>💀 Game Over</h1>
-
-<p id="scoreText"></p>
-
-<button onclick="restart()">Play Again</button>
-
-</div>
-
-
-<script>
-
-const consonants=[
-
-{ch:"ก",name:"Gor Gai (Chicken)",sound:"gor gai"},
-{ch:"ข",name:"Khor Khai (Egg)",sound:"khor khai"},
-{ch:"ค",name:"Khor Khwai (Buffalo)",sound:"khor khwai"},
-{ch:"ง",name:"Ngor Ngu (Snake)",sound:"ngor ngu"},
-{ch:"จ",name:"Jor Jan (Plate)",sound:"jor jan"},
-{ch:"ช",name:"Chor Chang (Elephant)",sound:"chor chang"},
-{ch:"ซ",name:"Sor So (Chain)",sound:"sor so"},
-{ch:"ญ",name:"Yor Ying (Woman)",sound:"yor ying"},
-{ch:"ด",name:"Dor Dek (Child)",sound:"dor dek"},
-{ch:"ต",name:"Tor Tao (Turtle)",sound:"tor tao"},
-{ch:"น",name:"Nor Nu (Mouse)",sound:"nor nu"},
-{ch:"บ",name:"Bor BaiMai (Leaf)",sound:"bor baimai"},
-{ch:"ป",name:"Por Pla (Fish)",sound:"por pla"},
-{ch:"ผ",name:"Phor Phueng (Bee)",sound:"phor phueng"},
-{ch:"พ",name:"Phor Phan (Tray)",sound:"phor phan"},
-{ch:"ฟ",name:"For Fan (Teeth)",sound:"for fan"},
-{ch:"ม",name:"Mor Ma (Horse)",sound:"mor ma"},
-{ch:"ย",name:"Yor Yak (Giant)",sound:"yor yak"},
-{ch:"ร",name:"Ror Ruea (Boat)",sound:"ror ruea"},
-{ch:"ล",name:"Lor Ling (Monkey)",sound:"lor ling"},
-{ch:"ว",name:"Wor Waen (Ring)",sound:"wor waen"},
-{ch:"ส",name:"Sor Suea (Tiger)",sound:"sor suea"},
-{ch:"ห",name:"Hor Hip (Chest)",sound:"hor hip"},
-{ch:"อ",name:"Or Ang (Basin)",sound:"or ang"},
-{ch:"ฮ",name:"Hor Nokhuk (Owl)",sound:"hor nokhuk"}
-
-];
-
-let current;
-let lives=3;
-let score=0;
-let player="Player";
-
-
-function startQuiz(){
-
-player=document.getElementById("nickname").value || "Player";
-
-document.getElementById("player").innerText=player;
-
-document.getElementById("startPage").classList.add("hidden");
-document.getElementById("quizPage").classList.remove("hidden");
-
-newQuestion();
-
-}
-
-
-function newQuestion(){
-
-document.getElementById("feedback").innerText="";
-
-current=consonants[Math.floor(Math.random()*consonants.length)];
-
-document.getElementById("letter").innerText=current.ch;
-
-let options=[current];
-
-while(options.length<4){
-
-let rand=consonants[Math.floor(Math.random()*consonants.length)];
-
-if(!options.includes(rand)){
-options.push(rand);
-}
-
-}
-
-options.sort(()=>Math.random()-0.5);
-
-const choicesDiv=document.getElementById("choices");
-
-choicesDiv.innerHTML="";
-
-options.forEach(opt=>{
-
-let btn=document.createElement("button");
-
-btn.className="choice";
-
-btn.innerText=opt.name;
-
-btn.onclick=()=>checkAnswer(opt);
-
-choicesDiv.appendChild(btn);
-
-});
-
-}
-
-
-function checkAnswer(opt){
-
-if(opt.ch===current.ch){
-
-score++;
-
-document.getElementById("feedback").innerText="Correct!";
-document.getElementById("feedback").className="feedback good";
-
-setTimeout(newQuestion,700);
-
-}else{
-
-lives--;
-
-updateHearts();
-
-document.getElementById("feedback").innerText="Wrong!";
-document.getElementById("feedback").className="feedback bad";
-
-if(lives<=0){
-gameOver();
-}else{
-setTimeout(newQuestion,900);
-}
-
-}
-
-}
-
-
-function updateHearts(){
-
-let hearts="";
-
-for(let i=0;i<lives;i++){
-hearts+="❤️";
-}
-
-for(let i=lives;i<3;i++){
-hearts+="🖤";
-}
-
-document.getElementById("hearts").innerText=hearts;
-
-}
-
-
-function speak(){
-
-let utter=new SpeechSynthesisUtterance(current.sound);
-
-speechSynthesis.speak(utter);
-
-}
-
-
-function skip(){
-newQuestion();
-}
-
-
-function resetGame(){
-
-lives=3;
-score=0;
-
-updateHearts();
-
-newQuestion();
-
-}
-
-
-function gameOver(){
-
-document.getElementById("quizPage").classList.add("hidden");
-
-document.getElementById("gameOver").classList.remove("hidden");
-
-document.getElementById("scoreText").innerText=
-player+"'s score: "+score;
-
-}
-
-
-function restart(){
-
-lives=3;
-score=0;
-
-updateHearts();
-
-document.getElementById("gameOver").classList.add("hidden");
-
-document.getElementById("quizPage").classList.remove("hidden");
-
-newQuestion();
-
-}
-
-</script>
-
+  <!-- START PAGE -->
+  <div class="card" id="startPage">
+    <h1>curly-octo-lamp presents</h1>
+    <div class="subtitle">Thai Consonant Quiz</div>
+
+    <input id="nickname" placeholder="Enter nickname" maxlength="40" />
+    <br /><br />
+
+    <button class="startBtn" onclick="startQuiz()">Start Quiz</button>
+
+    <div class="error" id="startError"></div>
+  </div>
+
+  <!-- QUIZ PAGE -->
+  <div class="card hidden" id="quizPage">
+    <div class="hearts" id="hearts">❤️❤️❤️</div>
+
+    <h2 id="player">Player</h2>
+    <div class="meta" id="counterText">Start count: 0</div>
+
+    <div class="letter" id="letter">ก</div>
+
+    <div id="choices"></div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="controls">
+      <button onclick="speak()">Speak</button>
+      <button onclick="skip()">Skip</button>
+      <button onclick="resetGame()">Reset</button>
+    </div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div class="card hidden" id="gameOver">
+    <h1>💀 Game Over</h1>
+    <p id="scoreText"></p>
+    <button class="startBtn" onclick="restart()">Play Again</button>
+  </div>
+
+  <script>
+    // Replace this with your real curly-octo-lamp backend URL from Render
+    const BACKEND_URL = "https://your-curly-octo-lamp-backend.onrender.com";
+
+    const consonants = [
+      {ch:"ก",name:"Gor Gai (Chicken)",sound:"gor gai"},
+      {ch:"ข",name:"Khor Khai (Egg)",sound:"khor khai"},
+      {ch:"ค",name:"Khor Khwai (Buffalo)",sound:"khor khwai"},
+      {ch:"ง",name:"Ngor Ngu (Snake)",sound:"ngor ngu"},
+      {ch:"จ",name:"Jor Jan (Plate)",sound:"jor jan"},
+      {ch:"ช",name:"Chor Chang (Elephant)",sound:"chor chang"},
+      {ch:"ซ",name:"Sor So (Chain)",sound:"sor so"},
+      {ch:"ญ",name:"Yor Ying (Woman)",sound:"yor ying"},
+      {ch:"ด",name:"Dor Dek (Child)",sound:"dor dek"},
+      {ch:"ต",name:"Tor Tao (Turtle)",sound:"tor tao"},
+      {ch:"น",name:"Nor Nu (Mouse)",sound:"nor nu"},
+      {ch:"บ",name:"Bor BaiMai (Leaf)",sound:"bor baimai"},
+      {ch:"ป",name:"Por Pla (Fish)",sound:"por pla"},
+      {ch:"ผ",name:"Phor Phueng (Bee)",sound:"phor phueng"},
+      {ch:"พ",name:"Phor Phan (Tray)",sound:"phor phan"},
+      {ch:"ฟ",name:"For Fan (Teeth)",sound:"for fan"},
+      {ch:"ม",name:"Mor Ma (Horse)",sound:"mor ma"},
+      {ch:"ย",name:"Yor Yak (Giant)",sound:"yor yak"},
+      {ch:"ร",name:"Ror Ruea (Boat)",sound:"ror ruea"},
+      {ch:"ล",name:"Lor Ling (Monkey)",sound:"lor ling"},
+      {ch:"ว",name:"Wor Waen (Ring)",sound:"wor waen"},
+      {ch:"ส",name:"Sor Suea (Tiger)",sound:"sor suea"},
+      {ch:"ห",name:"Hor Hip (Chest)",sound:"hor hip"},
+      {ch:"อ",name:"Or Ang (Basin)",sound:"or ang"},
+      {ch:"ฮ",name:"Hor Nokhuk (Owl)",sound:"hor nokhuk"}
+    ];
+
+    let current = null;
+    let lives = 3;
+    let score = 0;
+    let player = "Player";
+    let startCount = 0;
+
+    async function startQuiz(){
+      const errorEl = document.getElementById("startError");
+      errorEl.innerText = "";
+
+      const nicknameInput = document.getElementById("nickname").value.trim();
+      const nickname = nicknameInput || "Player";
+
+      try{
+        const response = await fetch(`${BACKEND_URL}/api/start-quiz`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            nickname: nickname
+          })
+        });
+
+        if(!response.ok){
+          let message = "Failed to start quiz";
+          try{
+            const errData = await response.json();
+            if(errData.detail){
+              message = errData.detail;
+            }
+          }catch(e){}
+          throw new Error(message);
+        }
+
+        const data = await response.json();
+
+        player = data.nickname;
+        startCount = data.start_count;
+
+        lives = 3;
+        score = 0;
+        updateHearts();
+
+        document.getElementById("player").innerText = `${player}`;
+        document.getElementById("counterText").innerText = `Start count: ${startCount}`;
+
+        document.getElementById("startPage").classList.add("hidden");
+        document.getElementById("gameOver").classList.add("hidden");
+        document.getElementById("quizPage").classList.remove("hidden");
+
+        newQuestion();
+      }catch(error){
+        console.error("Start quiz error:", error);
+        errorEl.innerText = "Could not start quiz. Check your backend URL and Render service.";
+      }
+    }
+
+    function newQuestion(){
+      document.getElementById("feedback").innerText = "";
+      document.getElementById("feedback").className = "feedback";
+
+      current = consonants[Math.floor(Math.random() * consonants.length)];
+      document.getElementById("letter").innerText = current.ch;
+
+      let options = [current];
+
+      while(options.length < 4){
+        let rand = consonants[Math.floor(Math.random() * consonants.length)];
+        if(!options.includes(rand)){
+          options.push(rand);
+        }
+      }
+
+      options.sort(() => Math.random() - 0.5);
+
+      const choicesDiv = document.getElementById("choices");
+      choicesDiv.innerHTML = "";
+
+      options.forEach(opt => {
+        let btn = document.createElement("button");
+        btn.className = "choice";
+        btn.innerText = opt.name;
+        btn.onclick = () => checkAnswer(opt);
+        choicesDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(opt){
+      if(opt.ch === current.ch){
+        score++;
+        document.getElementById("feedback").innerText = "Correct!";
+        document.getElementById("feedback").className = "feedback good";
+        setTimeout(newQuestion, 700);
+      }else{
+        lives--;
+        updateHearts();
+        document.getElementById("feedback").innerText = "Wrong!";
+        document.getElementById("feedback").className = "feedback bad";
+
+        if(lives <= 0){
+          gameOver();
+        }else{
+          setTimeout(newQuestion, 900);
+        }
+      }
+    }
+
+    function updateHearts(){
+      let hearts = "";
+
+      for(let i = 0; i < lives; i++){
+        hearts += "❤️";
+      }
+
+      for(let i = lives; i < 3; i++){
+        hearts += "🖤";
+      }
+
+      document.getElementById("hearts").innerText = hearts;
+    }
+
+    function speak(){
+      if(!current) return;
+      let utter = new SpeechSynthesisUtterance(current.sound);
+      speechSynthesis.speak(utter);
+    }
+
+    function skip(){
+      if(!current) return;
+      newQuestion();
+    }
+
+    function resetGame(){
+      lives = 3;
+      score = 0;
+      updateHearts();
+      newQuestion();
+    }
+
+    function gameOver(){
+      document.getElementById("quizPage").classList.add("hidden");
+      document.getElementById("gameOver").classList.remove("hidden");
+      document.getElementById("scoreText").innerText = `${player}'s score: ${score} | Start count: ${startCount}`;
+    }
+
+    function restart(){
+      document.getElementById("gameOver").classList.add("hidden");
+      document.getElementById("startPage").classList.remove("hidden");
+      document.getElementById("nickname").value = player === "Player" ? "" : player;
+      document.getElementById("startError").innerText = "";
+    }
+  </script>
 </body>
 </html>
